@@ -57,11 +57,12 @@ berurutan (dengan jeda agar tidak diblokir browser).
 **PSB** — nomor pendaftaran (`PSB-2026-0001`) & kode unik otomatis, unggah berkas syarat,
 halaman **Cek Hasil Seleksi** untuk pendaftar (nomor + kode), pengumuman resmi, dan laporan CSV.
 
-### Modul Dinamis
-Menu **Modul** (`/admin/modules`) mengatur kelompok modul mana yang aktif. Modul nonaktif
-tetap menyimpan datanya, hanya disembunyikan dari sidebar (beserta seluruh sub-menunya).
-Struktur modul ada di `app/composables/useModules.ts` sebagai `DEFAULT_MODULES`.
-Modul **Akademik** bersifat wajib (tidak dapat dimatikan).
+### Modul Dinamis (khusus Super Admin)
+Menu **Modul** (`/admin/modules`) mengatur kelompok modul mana yang aktif. Hanya **Super Admin**
+yang dapat mengaksesnya — menu disembunyikan untuk peran lain dan halaman menampilkan
+"Akses terbatas" bila dibuka langsung. Modul nonaktif tetap menyimpan datanya, hanya
+disembunyikan dari sidebar (beserta seluruh sub-menunya). Struktur modul ada di
+`app/composables/useModules.ts` sebagai `DEFAULT_MODULES`. Modul **Akademik** bersifat wajib.
 
 ### Pengguna & Peran Dinamis
 - **Pengguna** (`/admin/users`) — CRUD pengguna dengan validasi username unik, status aktif,
@@ -142,15 +143,32 @@ Tersedia di header publik, menu "Lainnya", panel admin, dan halaman **Tema & Ide
 
 ## 🔐 Akun Demo
 
-| Peran | Username | Password |
-|---|---|---|
-| Administrator | `admin` | `admin123` |
-| Pengurus | `pengurus` | `pengurus123` |
-| Ustadz / Guru | `ustadz` | `ustadz123` |
-| Bendahara | `bendahara` | `bendahara123` |
+| Peran | Username | Password | Catatan |
+|---|---|---|---|
+| **Super Admin** | `superadmin` | `superadmin123` | Akses penuh **+ mengatur modul** yang aktif di sidebar |
+| Administrator | `admin` | `admin123` | Mengoperasikan semua modul (tanpa kelola modul) |
+| Pengurus | `pengurus` | `pengurus123` | Modul akademik, asrama, keuangan, tahfidz, pembinaan, PSB |
+| Ustadz / Guru | `ustadz` | `ustadz123` | Akademik, tahfidz, pembinaan, absensi |
+| Musyrif Asrama | — | — | Asrama, penempatan kamar, piket, perizinan |
+| Bendahara | `bendahara` | `bendahara123` | Tagihan, invoice, saldo, laporan keuangan |
+| Operator | — | — | Konten landing page & data dasar |
 
 Hak akses tiap peran diatur di **Peran & Akses**. Pengguna baru otomatis memakai
 password `username123`.
+
+### Super Admin vs Administrator
+Perbedaan kuncinya ada pada **kapabilitas khusus** `modul`:
+
+| | Super Admin | Administrator |
+|---|---|---|
+| Operasikan seluruh modul | ✅ | ✅ |
+| Menu **Modul** di sidebar | ✅ | ❌ (tidak tampil) |
+| Aktif/nonaktifkan modul | ✅ | ❌ (halaman menolak akses) |
+| Kelola pengguna & peran | ✅ | ✅ |
+
+Kapabilitas dapat diberikan/dicabut per peran di **Peran & Akses → Kapabilitas Khusus**.
+Pengamanan berlapis: menu disembunyikan, halaman menampilkan "Akses terbatas",
+dan fungsi `setActive` di composable menolak perubahan bila tidak berhak.
 
 ---
 

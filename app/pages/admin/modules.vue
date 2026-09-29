@@ -47,7 +47,7 @@
                 </div>
                 <p class="mt-0.5 text-xs leading-relaxed text-[var(--ink-muted)]">{{ m.deskripsi }}</p>
               </div>
-              <USwitch :model-value="m.aktif" :disabled="m.wajib" @update:model-value="v => setActive(m.id, !!v)" />
+              <USwitch :model-value="m.aktif" :disabled="m.wajib" @update:model-value="v => ubahModul(m.id, !!v)" />
             </div>
           </template>
 

@@ -50,6 +50,14 @@
               <UBadge v-for="a in role.actions" :key="a" size="sm" color="primary" variant="soft">{{ ACTION_LABEL[a] }}</UBadge>
             </div>
           </div>
+          <div v-if="role.caps?.length">
+            <p class="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-[var(--ink-muted)]">Kapabilitas Khusus</p>
+            <div class="flex flex-wrap gap-1.5">
+              <UBadge v-for="c in role.caps" :key="c" size="sm" color="warning" variant="soft" icon="i-lucide-shield-check">
+                {{ CAP_LABEL[c] ?? c }}
+              </UBadge>
+            </div>
+          </div>
         </div>
       </UCard>
     </div>
@@ -90,6 +98,22 @@
             </div>
           </UFormField>
 
+          <UFormField label="Kapabilitas Khusus">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between rounded-2xl bg-amber-50 px-3.5 py-2.5 dark:bg-amber-500/10">
+                <div class="min-w-0 pe-3">
+                  <p class="text-sm font-semibold">Kelola Modul</p>
+                  <p class="text-[11px] text-[var(--ink-muted)]">Dapat mengaktifkan/menonaktifkan modul di sidebar.</p>
+                </div>
+                <USwitch v-model="kelolaModul" />
+              </div>
+              <p class="text-[11px] text-[var(--ink-muted)]">
+                Kapabilitas ini hanya untuk Super Admin. Administrator biasa mengoperasikan modul
+                tanpa dapat mengubah daftarnya.
+              </p>
+            </div>
+          </UFormField>
+
           <div class="flex gap-2 pt-1">
             <UButton type="button" color="neutral" variant="soft" class="flex-1" @click="modalOpen = false">Batal</UButton>
             <UButton type="submit" class="flex-[2]" icon="i-lucide-check">Simpan</UButton>
@@ -109,6 +133,10 @@ definePageMeta({ layout: 'admin', middleware: 'admin' })
 const { roles, load, saveRole, removeRole, allActions } = useAuthz()
 const toast = useToast()
 
+const CAP_LABEL: Record<string, string> = {
+  modul: 'Kelola Modul',
+}
+
 const ACTION_LABEL: Record<string, string> = {
   read: 'Lihat',
   create: 'Tambah',
@@ -125,6 +153,7 @@ function resourceLabel(key: string) {
 const modalOpen = ref(false)
 const editing = ref<Role | null>(null)
 const allModules = ref(false)
+const kelolaModul = ref(false)
 const form = reactive<{ nama: string, deskripsi: string, resources: string[], actions: Action[] }>({
   nama: '',
   deskripsi: '',
@@ -135,6 +164,7 @@ const form = reactive<{ nama: string, deskripsi: string, resources: string[], ac
 function openCreate() {
   editing.value = null
   allModules.value = false
+  kelolaModul.value = false
   Object.assign(form, { nama: '', deskripsi: '', resources: [], actions: ['read'] as Action[] })
   modalOpen.value = true
 }
@@ -142,6 +172,7 @@ function openCreate() {
 function openEdit(role: Role) {
   editing.value = role
   allModules.value = role.resources === '*'
+  kelolaModul.value = Boolean(role.caps?.includes('modul'))
   Object.assign(form, {
     nama: role.nama,
     deskripsi: role.deskripsi,
@@ -174,6 +205,7 @@ function save() {
     deskripsi: form.deskripsi,
     resources: allModules.value ? '*' : form.resources,
     actions: form.actions,
+    caps: kelolaModul.value ? ['modul'] : [],
     isSystem: editing.value?.isSystem,
   })
   modalOpen.value = false

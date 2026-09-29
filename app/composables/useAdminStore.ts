@@ -290,6 +290,7 @@ const SEEDS: Record<ResourceKey, any[]> = {
   ],
 
   users: [
+    { id: 'u-superadmin', nama: 'Super Admin', username: 'superadmin', roleId: 'superadmin' },
     { id: 'u-admin', nama: 'Admin Pesantren', username: 'admin', roleId: 'admin' },
     { id: 'u-pengurus', nama: 'Pengurus Pondok', username: 'pengurus', roleId: 'pengurus' },
     { id: 'u-ustadz', nama: 'Ustadz Fauzan', username: 'ustadz', roleId: 'ustadz' },
