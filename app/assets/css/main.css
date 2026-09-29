@@ -1,0 +1,239 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =========================================================================
+   DESIGN SYSTEM — "Islamic Modern"
+   Palet emerald/teal, pola geometri halus, kartu rounded lembut.
+   Semua warna brand lewat CSS var --brand-* agar bisa diganti runtime
+   dari Pengaturan Tema (lihat composables/useSiteSettings.ts).
+   ========================================================================= */
+
+:root {
+  color-scheme: light;
+  --brand-100: #ccfbf1;
+  --brand-500: #14b8a6;
+  --brand-600: #0f766e;
+  --brand-700: #115e59;
+  /* Varian terang untuk teks di atas permukaan gelap (diisi dari palet). */
+  --brand-on: #5eead4;
+  /* Warna teks brand — light: primary. Dark: varian terang (lihat :root.dark). */
+  --brand-text: var(--brand-600);
+
+  /* Token permukaan & teks */
+  --surface: #ffffff;
+  --surface-muted: #f6f8f8;
+  --ink: #0b1f1c;
+  --ink-muted: #56635f; /* kontras 7.0:1 di atas surface-muted */
+  --hairline: rgba(15, 118, 110, 0.14);
+}
+
+:root.dark {
+  color-scheme: dark;
+  /* Permukaan dinaikkan sedikit & didinginkan agar tidak "hitam legam" dan
+     memberi pemisahan antar kartu. */
+  --surface: #101f1d;
+  --surface-muted: #0a1614;
+  --ink: #eaf5f3;
+  --ink-muted: #a7bab6; /* kontras 8.5:1 di atas surface */
+  --hairline: rgba(255, 255, 255, 0.12);
+
+  /* Di dark mode, warna brand pekat gagal kontras sebagai teks
+     (emerald #0f766e hanya 3.4:1). Pakai varian terang dari palet. */
+  --brand-text: var(--brand-on);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+ * Font aplikasi. Nuxt UI mendefinisikan `html`/`body { font-family: var(--font-sans) }`
+ * SETELAH css ini dimuat, sehingga deklarasi biasa akan kalah. Kita set ulang
+ * `--font-sans` (dipakai Nuxt UI) dan menulis aturan font tanpa layer agar
+ * menang spesifisitas. Plus Jakarta Sans punya x-height besar & counter terbuka
+ * sehingga sangat mudah dibaca, sementara bobot 200–800 memberi nuansa modern.
+ */
+:root {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body,
+.font-sans {
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+body {
+  @apply antialiased;
+  background-color: var(--surface-muted);
+  color: var(--ink);
+  overscroll-behavior-y: none;
+  line-height: 1.6;
+}
+
+/* Judul lebih rapat & tegas; teks isi sedikit lebih longgar agar nyaman dibaca */
+h1, h2, h3, h4 {
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* ---------- Shell mobile: menyerupai aplikasi native di layar besar ---------- */
+.mobile-shell {
+  @apply relative mx-auto min-h-dvh w-full max-w-[440px] overflow-x-hidden;
+  background-color: var(--surface);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media (min-width: 900px) {
+  .mobile-shell {
+    box-shadow: 0 30px 90px -30px rgba(9, 60, 55, 0.45);
+    border-inline: 1px solid var(--hairline);
+  }
+}
+
+/* ---------- Pola geometri islami (halus, untuk header/hero) ---------- */
+.pattern-islamic {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.22) 1px, transparent 0),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0 8px, transparent 8px 16px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 0 8px, transparent 8px 16px);
+  background-size: 18px 18px, auto, auto;
+}
+.pattern-islamic-soft {
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--brand-600) 22%, transparent) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* ---------- Brand helpers ---------- */
+.brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+}
+.brand-gradient-soft {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--brand-500) 14%, var(--surface)), var(--surface));
+}
+.brand-text {
+  color: var(--brand-text);
+}
+.brand-soft {
+  background-color: color-mix(in srgb, var(--brand-500) 14%, var(--surface));
+  color: var(--brand-text);
+}
+/* Latar lembut di dark mode dicampur dari varian terang agar teksnya kontras. */
+:root.dark .brand-soft {
+  background-color: color-mix(in srgb, var(--brand-on) 16%, var(--surface));
+}
+.brand-ring {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-600) 25%, transparent);
+}
+
+/* ---------- Kartu ---------- */
+.card-soft {
+  @apply rounded-3xl border;
+  border-color: var(--hairline);
+  background-color: var(--surface);
+}
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card-hover:active {
+  transform: scale(0.985);
+}
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px -24px color-mix(in srgb, var(--brand-700) 60%, transparent);
+  }
+}
+
+/* Aksen garis di tepi kiri kartu (sentuhan custom, bukan default Nuxt UI) */
+.card-accent {
+  position: relative;
+  overflow: hidden;
+}
+.card-accent::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background-image: linear-gradient(180deg, var(--brand-500), var(--brand-700));
+}
+
+/* ---------- Section title ---------- */
+.eyebrow {
+  @apply text-[11px] font-bold uppercase tracking-[0.14em];
+  color: var(--brand-text);
+}
+
+/* ---------- Utilitas kecil ---------- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.snap-x-mandatory { scroll-snap-type: x mandatory; }
+.snap-center-always { scroll-snap-align: center; }
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ---------- Safe area helpers (perangkat berponi) ---------- */
+.safe-top { padding-top: max(1rem, env(safe-area-inset-top)); }
+.safe-bottom { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+
+/* Animasi masuk halus untuk konten */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in { animation: rise-in 0.35s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- Jembatan palet ke Nuxt UI ----------
+   Semua komponen color="primary" (UButton, UBadge, USwitch, ...) mengikuti
+   var --brand-* sehingga ikut berubah saat tema diganti. Ditaruh unlayered
+   agar menang atas default theme Nuxt UI. */
+:root {
+  --ui-primary: var(--brand-600);
+  --ui-color-primary-50: color-mix(in srgb, var(--brand-600) 8%, white);
+  --ui-color-primary-100: var(--brand-100);
+  --ui-color-primary-200: color-mix(in srgb, var(--brand-600) 28%, white);
+  --ui-color-primary-300: color-mix(in srgb, var(--brand-600) 48%, white);
+  --ui-color-primary-400: color-mix(in srgb, var(--brand-600) 72%, white);
+  --ui-color-primary-500: var(--brand-500);
+  --ui-color-primary-600: var(--brand-600);
+  --ui-color-primary-700: var(--brand-700);
+  --ui-color-primary-800: color-mix(in srgb, var(--brand-700) 78%, black);
+  --ui-color-primary-900: color-mix(in srgb, var(--brand-700) 62%, black);
+  --ui-color-primary-950: color-mix(in srgb, var(--brand-700) 42%, black);
+}
+
+/*
+ * Dark mode: warna brand pekat tidak terbaca sebagai teks/ikon. Naikkan
+ * tangga skala Nuxt UI (300–500 pakai varian terang) sehingga teks primary,
+ * ikon, dan focus ring tetap kontras, sementara 600+ tetap dipakai sebagai
+ * LATAR tombol solid (teks putih di atasnya sudah lolos kontras).
+ */
+:root.dark {
+  --ui-primary: var(--brand-on);
+  --ui-color-primary-50: color-mix(in srgb, var(--brand-on) 10%, var(--surface));
+  --ui-color-primary-100: color-mix(in srgb, var(--brand-on) 18%, var(--surface));
+  --ui-color-primary-200: color-mix(in srgb, var(--brand-on) 30%, var(--surface));
+  --ui-color-primary-300: color-mix(in srgb, var(--brand-on) 86%, white);
+  --ui-color-primary-400: color-mix(in srgb, var(--brand-on) 92%, white);
+  --ui-color-primary-500: var(--brand-on);
+}
